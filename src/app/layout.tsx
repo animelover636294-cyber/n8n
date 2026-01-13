@@ -40,11 +40,20 @@ export default function RootLayout({
       publishableKey={clerkKey}
       afterSignInUrl="/dashboard"
       afterSignUpUrl="/dashboard"
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+      signInFallbackRedirectUrl="/dashboard"
+      signUpFallbackRedirectUrl="/dashboard"
       appearance={{
         elements: {
           rootBox: 'mx-auto',
         },
       }}
+      allowedRedirectOrigins={
+        process.env.NODE_ENV === 'production'
+          ? ['https://n8n-pi-flax.vercel.app']
+          : ['http://localhost:3000', 'http://localhost:3001']
+      }
     >
       <html lang="en">
         <head>

@@ -14,12 +14,15 @@ export default authMiddleware({
     '/api/flow',
     '/api/cron/wait',
   ],
+  debug: process.env.NODE_ENV === 'development',
 })
 
-// Middleware configuration for Clerk authentication
-
 export const config = {
-  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
+  matcher: [
+    '/((?!.+\\.[\\w]+$|_next).*)',
+    '/',
+    '/(api|trpc)(.*)',
+  ],
 }
 
 // https://www.googleapis.com/auth/userinfo.email
