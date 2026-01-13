@@ -1,7 +1,12 @@
 'use client'
 
-import { UserButton } from '@clerk/nextjs'
+import dynamic from 'next/dynamic'
 import { useEffect, useState, Component, ErrorInfo } from 'react'
+
+const UserButton = dynamic(
+  () => import('@clerk/nextjs').then((mod) => mod.UserButton),
+  { ssr: false }
+)
 
 type Props = {
   afterSignOutUrl?: string
