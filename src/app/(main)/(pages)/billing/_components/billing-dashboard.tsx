@@ -15,9 +15,15 @@ const BillingDashboard = (props: Props) => {
 
   const onStripeProducts = async () => {
     setLoading(true)
-    const { data } = await axios.get('/api/payment')
-    if (data) {
-      setStripeProducts(data)
+    try {
+      const { data } = await axios.get('/api/payment')
+      if (data && !data.error) {
+        setStripeProducts(data)
+      }
+    } catch (error) {
+      console.error('Failed to load Stripe products:', error)
+      // Stripe not configured - billing page will show without products
+    } finally {
       setLoading(false)
     }
   }
