@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ModeToggle } from '../global/mode-toggle'
 import { Book, Headphones, Search } from 'lucide-react'
 import Templates from '../icons/cloud_download'
@@ -19,16 +19,29 @@ type Props = {}
 
 const InfoBar = (props: Props) => {
   const { credits, tier, setCredits, setTier } = useBilling()
+  const [isClerkReady, setIsClerkReady] = useState(false)
 
   const onGetPayment = async () => {
-    const response = await onPaymentDetails()
-    if (response) {
-      setTier(response.tier!)
-      setCredits(response.credits!)
+    try {
+      const response = await onPaymentDetails()
+      if (response) {
+        setTier(response.tier!)
+        setCredits(response.credits!)
+      }
+    } catch (error) {
+      console.error('Failed to get payment details:', error)
     }
   }
 
   useEffect(() => {
+    // Wait for Clerk to initialize
+    if (typeof window !== 'undefined' && window.Clerk) {
+      setIsClerkReady(true)
+    } else {
+      // Fallback: set ready after a short delay
+      const timer = setTimeout(() => setIsClerkReady(true), 100)
+      return () => clearTimeout(timer)
+    }
     onGetPayment()
   }, [])
 
@@ -71,7 +84,7 @@ const InfoBar = (props: Props) => {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <UserButton />
+      {isClerkReady && <UserButton />}
     </div>
   )
 }
