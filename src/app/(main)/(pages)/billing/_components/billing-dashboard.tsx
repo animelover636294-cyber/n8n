@@ -52,34 +52,12 @@ const BillingDashboard = (props: Props) => {
         return
       }
 
-      // Initialize Razorpay checkout
-      const options = {
-        key: data.keyId,
-        amount: data.amount,
-        currency: data.currency,
-        name: 'Fuzzie',
-        description: 'Subscription Plan',
-        order_id: data.orderId,
-        handler: function (response: any) {
-          // Redirect to billing page with payment details
-          window.location.href = `/billing?payment_id=${response.razorpay_payment_id}&order_id=${response.razorpay_order_id}&plan_id=${id}`
-        },
-        prefill: {
-          // You can prefill customer details here
-        },
-        theme: {
-          color: '#2F006B',
-        },
-        modal: {
-          ondismiss: function () {
-            // Handle payment cancellation
-            console.log('Payment cancelled')
-          },
-        },
+      // Redirect to PayPal approval URL
+      if (data.approvalUrl) {
+        window.location.href = data.approvalUrl
+      } else {
+        console.error('No approval URL received from PayPal')
       }
-
-      const razorpay = new window.Razorpay(options)
-      razorpay.open()
     } catch (error) {
       console.error('Payment error:', error)
     }
