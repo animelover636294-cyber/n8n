@@ -13,13 +13,17 @@ export async function GET() {
 
   const { userId } = auth()
   if (!userId) {
-    return NextResponse.json({ message: 'User not found' })
+    return NextResponse.json({ message: 'User not found' }, { status: 401 })
   }
 
-  const clerkResponse = await clerkClient.users.getUserOauthAccessToken(
-    userId,
-    'oauth_google'
-  )
+  const clerkResponse = await clerkClient.users.getUserOauthAccessToken(userId, 'oauth_google')
+
+  if (!clerkResponse || clerkResponse.length === 0) {
+    return NextResponse.json(
+      { message: 'Google OAuth token not found for user' },
+      { status: 401 }
+    )
+  }
 
   const accessToken = clerkResponse[0].token
   oauth2Client.setCredentials({
@@ -57,6 +61,7 @@ export async function GET() {
     return Response.json(
       {
         message: 'Something went wrong',
+        error: (error as Error).message,
       },
       {
         status: 500,
