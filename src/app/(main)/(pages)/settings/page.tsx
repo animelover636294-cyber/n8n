@@ -10,7 +10,18 @@ const Settings = async (props: Props) => {
   const authUser = await currentUser()
   if (!authUser) return null
 
-  const user = await db.user.findUnique({ where: { clerkId: authUser.id } })
+  let user = await db.user.findUnique({ where: { clerkId: authUser.id } })
+  
+  // If user doesn't exist in DB yet, create them
+  if (!user) {
+    user = await db.user.create({
+      data: {
+        clerkId: authUser.id,
+        email: authUser.emailAddresses[0]?.emailAddress || '',
+        name: authUser.firstName || authUser.username || '',
+      },
+    })
+  }
   const removeProfileImage = async () => {
     'use server'
     const response = await db.user.update({
