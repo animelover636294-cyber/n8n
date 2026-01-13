@@ -52,8 +52,6 @@ export default function RootLayout({
           afterSignUpUrl="/dashboard"
           signInUrl="/sign-in"
           signUpUrl="/sign-up"
-          signInFallbackRedirectUrl="/dashboard"
-          signUpFallbackRedirectUrl="/dashboard"
           appearance={{
             elements: {
               rootBox: 'mx-auto',
