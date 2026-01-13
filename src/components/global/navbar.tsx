@@ -2,7 +2,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 import { MenuIcon } from 'lucide-react'
-import { UserButton, currentUser, ClerkLoaded, ClerkLoading } from '@clerk/nextjs'
+import { currentUser } from '@clerk/nextjs'
+import { UserButtonWrapper } from './user-button-wrapper'
 
 type Props = {}
 
@@ -53,16 +54,7 @@ const Navbar = async (props: Props) => {
             {user ? 'Dashboard' : 'Get Started'}
           </span>
         </Link>
-        {user ? (
-          <>
-            <ClerkLoading>
-              <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
-            </ClerkLoading>
-            <ClerkLoaded>
-              <UserButton afterSignOutUrl="/" />
-            </ClerkLoaded>
-          </>
-        ) : null}
+        {user ? <UserButtonWrapper afterSignOutUrl="/" /> : null}
         <MenuIcon className="md:hidden" />
       </aside>
     </header>

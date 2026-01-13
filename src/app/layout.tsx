@@ -23,11 +23,21 @@ export default function RootLayout({
 
   if (!clerkKey) {
     console.error('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is not set')
+    // Don't render ClerkProvider if key is missing to prevent errors
+    return (
+      <html lang="en">
+        <body className={font.className}>
+          <div className="flex items-center justify-center h-screen">
+            <p className="text-red-500">Clerk configuration error: Missing publishable key</p>
+          </div>
+        </body>
+      </html>
+    )
   }
 
   return (
     <ClerkProvider
-      publishableKey={clerkKey || ''}
+      publishableKey={clerkKey}
     >
       <html lang="en">
         <body className={font.className}>

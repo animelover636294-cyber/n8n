@@ -75,12 +75,12 @@ const InfoBar = (props: Props) => {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <ClerkLoading>
-        <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
-      </ClerkLoading>
       <ClerkLoaded>
         <UserButton />
       </ClerkLoaded>
+      <ClerkLoading>
+        <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+      </ClerkLoading>
     </div>
   )
 }
