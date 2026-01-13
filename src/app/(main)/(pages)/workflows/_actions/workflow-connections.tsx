@@ -152,6 +152,19 @@ export const onCreateWorkflow = async (name: string, description: string) => {
   const user = await currentUser()
 
   if (user) {
+    // Ensure the user exists in the local database before creating a workflow
+    await db.user.upsert({
+      where: {
+        clerkId: user.id,
+      },
+      update: {},
+      create: {
+        clerkId: user.id,
+        email: user.emailAddresses[0]?.emailAddress || '',
+        name: user.firstName || user.username || '',
+      },
+    })
+
     //create new workflow
     const workflow = await db.workflows.create({
       data: {
