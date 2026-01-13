@@ -4,6 +4,7 @@ import { postMessageToSlack } from '@/app/(main)/(pages)/connections/_actions/sl
 import { db } from '@/lib/db'
 import axios from 'axios'
 import { headers } from 'next/headers'
+export const dynamic = 'force-dynamic'
 import { NextRequest } from 'next/server'
 
 export async function POST(req: NextRequest) {

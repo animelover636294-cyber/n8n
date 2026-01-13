@@ -1,5 +1,6 @@
 import { google } from 'googleapis'
 import { clerkClient, currentUser } from '@clerk/nextjs'
+export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 import { db } from '@/lib/db'

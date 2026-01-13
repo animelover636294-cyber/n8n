@@ -76,6 +76,9 @@ export default function RootLayout({
           >
             <BillingProvider>
               <ModalProvider>
+                {/* Debug component to log Clerk initialization state in client consoles */}
+                {/* Remove in production after debugging */}
+                <script dangerouslySetInnerHTML={{__html: `/* Clerk debug: injected */`}} />
                 {children}
                 <Toaster />
               </ModalProvider>
