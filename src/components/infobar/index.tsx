@@ -43,12 +43,24 @@ class UserButtonErrorBoundary extends Component<
   }
 }
 
+// Component that uses useAuth - only rendered when Clerk is confirmed ready
+const UserButtonWithAuth = () => {
+  const { isLoaded } = useAuth()
+  
+  if (!isLoaded) {
+    return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+  }
+
+  return (
+    <UserButtonErrorBoundary>
+      <UserButton />
+    </UserButtonErrorBoundary>
+  )
+}
+
 const SafeUserButton = () => {
   const [mounted, setMounted] = useState(false)
   const [clerkReady, setClerkReady] = useState(false)
-  
-  // useAuth must be called unconditionally
-  const { isLoaded } = useAuth()
   
   useEffect(() => {
     setMounted(true)
@@ -56,18 +68,18 @@ const SafeUserButton = () => {
     // Check if Clerk is loaded by checking for the Clerk object
     const checkClerkReady = () => {
       if (typeof window !== 'undefined') {
-        // Check if Clerk is available in window
+        // Check if Clerk is available in window and has initialized
         const clerk = (window as any).Clerk
-        if (clerk && (clerk.loaded || clerk.__internal)) {
+        if (clerk && (clerk.loaded || clerk.__internal || clerk.user || clerk.session)) {
           setClerkReady(true)
         } else {
           // Retry after a delay, but limit retries
-          const maxRetries = 10
+          const maxRetries = 20
           let retries = 0
           const retry = () => {
             retries++
             if (retries < maxRetries) {
-              setTimeout(checkClerkReady, 300)
+              setTimeout(checkClerkReady, 150)
             }
           }
           retry()
@@ -81,15 +93,13 @@ const SafeUserButton = () => {
     }
   }, [mounted])
 
-  if (!mounted || (!isLoaded && !clerkReady)) {
+  // Show loading if not mounted or Clerk not ready
+  // Only render UserButtonWithAuth (which calls useAuth) when Clerk is confirmed ready
+  if (!mounted || !clerkReady) {
     return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
   }
 
-  return (
-    <UserButtonErrorBoundary>
-      <UserButton />
-    </UserButtonErrorBoundary>
-  )
+  return <UserButtonWithAuth />
 }
 
 const InfoBar = (props: Props) => {
