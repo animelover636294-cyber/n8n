@@ -37,38 +37,34 @@ export default function RootLayout({
   }
 
   return (
-    <ClerkProvider
-      publishableKey={clerkKey}
-      afterSignInUrl="/dashboard"
-      afterSignUpUrl="/dashboard"
-      signInUrl="/sign-in"
-      signUpUrl="/sign-up"
-      signInFallbackRedirectUrl="/dashboard"
-      signUpFallbackRedirectUrl="/dashboard"
-      appearance={{
-        elements: {
-          rootBox: 'mx-auto',
-        },
-      }}
-      allowedRedirectOrigins={
-        process.env.NODE_ENV === 'production'
-          ? ['https://n8n-pi-flax.vercel.app']
-          : ['http://localhost:3000', 'http://localhost:3001']
-      }
-    >
-      <html lang="en">
-        <head>
-          {clerkKey && (
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.__CLERK_PUBLISHABLE_KEY = '${clerkKey}';
-                `,
-              }}
-            />
-          )}
-        </head>
-        <body className={font.className}>
+    <html lang="en">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.__CLERK_PUBLISHABLE_KEY = '${clerkKey}';`,
+          }}
+        />
+      </head>
+      <body className={font.className}>
+        <ClerkProvider
+          publishableKey={clerkKey}
+          afterSignInUrl="/dashboard"
+          afterSignUpUrl="/dashboard"
+          signInUrl="/sign-in"
+          signUpUrl="/sign-up"
+          signInFallbackRedirectUrl="/dashboard"
+          signUpFallbackRedirectUrl="/dashboard"
+          appearance={{
+            elements: {
+              rootBox: 'mx-auto',
+            },
+          }}
+          allowedRedirectOrigins={
+            process.env.NODE_ENV === 'production'
+              ? ['https://n8n-pi-flax.vercel.app']
+              : ['http://localhost:3000', 'http://localhost:3001']
+          }
+        >
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
@@ -84,8 +80,8 @@ export default function RootLayout({
               </ModalProvider>
             </BillingProvider>
           </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   )
 }
