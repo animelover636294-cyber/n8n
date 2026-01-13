@@ -1,5 +1,5 @@
 import React from 'react'
-import Stripe from 'stripe'
+import Razorpay from 'razorpay'
 import { currentUser } from '@clerk/nextjs'
 import { db } from '@/lib/db'
 import BillingDashboard from './_components/billing-dashboard'
@@ -9,32 +9,47 @@ type Props = {
 }
 
 const Billing = async (props: Props) => {
-  const { session_id } = props.searchParams ?? {
-    session_id: '',
+  const { payment_id, order_id, plan_id } = props.searchParams ?? {
+    payment_id: '',
+    order_id: '',
+    plan_id: '',
   }
-  if (session_id) {
-    const stripe = new Stripe(process.env.STRIPE_SECRET!, {
-      typescript: true,
-      apiVersion: '2023-10-16',
-    })
+  
+  // Handle Razorpay payment success callback
+  if (payment_id && order_id && plan_id) {
+    if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+      try {
+        const razorpay = new Razorpay({
+          key_id: process.env.RAZORPAY_KEY_ID,
+          key_secret: process.env.RAZORPAY_KEY_SECRET,
+        })
 
-    const session = await stripe.checkout.sessions.listLineItems(session_id)
-    const user = await currentUser()
-    if (user) {
-      await db.user.update({
-        where: {
-          clerkId: user.id,
-        },
-        data: {
-          tier: session.data[0].description,
-          credits:
-            session.data[0].description == 'Unlimited'
-              ? 'Unlimited'
-              : session.data[0].description == 'Pro'
-              ? '100'
-              : '10',
-        },
-      })
+        // Verify payment
+        const payment = await razorpay.payments.fetch(payment_id)
+        
+        if (payment.status === 'authorized' || payment.status === 'captured') {
+          const user = await currentUser()
+          if (user) {
+            const planName = plan_id === 'pro' ? 'Pro' : plan_id === 'unlimited' ? 'Unlimited' : 'Free'
+            await db.user.update({
+              where: {
+                clerkId: user.id,
+              },
+              data: {
+                tier: planName,
+                credits:
+                  plan_id === 'unlimited'
+                    ? 'Unlimited'
+                    : plan_id === 'pro'
+                    ? '100'
+                    : '10',
+              },
+            })
+          }
+        }
+      } catch (error) {
+        console.error('Payment verification error:', error)
+      }
     }
   }
 

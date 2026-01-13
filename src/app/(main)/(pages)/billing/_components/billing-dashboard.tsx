@@ -33,18 +33,56 @@ const BillingDashboard = (props: Props) => {
   }, [])
 
   const onPayment = async (id: string) => {
-    const { data } = await axios.post(
-      '/api/payment',
-      {
-        priceId: id,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
+    try {
+      const { data } = await axios.post(
+        '/api/payment',
+        {
+          priceId: id,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+      // If free plan, update directly
+      if (data.amount === 0) {
+        window.location.reload()
+        return
+      }
+
+      // Initialize Razorpay checkout
+      const options = {
+        key: data.keyId,
+        amount: data.amount,
+        currency: data.currency,
+        name: 'Fuzzie',
+        description: 'Subscription Plan',
+        order_id: data.orderId,
+        handler: function (response: any) {
+          // Redirect to billing page with payment details
+          window.location.href = `/billing?payment_id=${response.razorpay_payment_id}&order_id=${response.razorpay_order_id}&plan_id=${id}`
+        },
+        prefill: {
+          // You can prefill customer details here
+        },
+        theme: {
+          color: '#2F006B',
+        },
+        modal: {
+          ondismiss: function () {
+            // Handle payment cancellation
+            console.log('Payment cancelled')
+          },
         },
       }
-    )
-    window.location.assign(data)
+
+      const razorpay = new window.Razorpay(options)
+      razorpay.open()
+    } catch (error) {
+      console.error('Payment error:', error)
+    }
   }
 
   return (
