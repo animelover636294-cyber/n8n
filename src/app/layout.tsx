@@ -55,36 +55,34 @@ export default function RootLayout({
           : ['http://localhost:3000', 'http://localhost:3001']
       }
     >
-  return (
-    <html lang="en">
-      <head>
-        {clerkKey && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                window.__CLERK_PUBLISHABLE_KEY = '${clerkKey}';
-                window.__CLERK_FRONTEND_API = 'https://clerk.vercel.app';
-              `,
-            }}
-          />
-        )}
-      </head>
-      <body className={font.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <BillingProvider>
-            <ModalProvider>
-              {children}
-              <Toaster />
-            </ModalProvider>
-          </BillingProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+      <html lang="en">
+        <head>
+          {clerkKey && (
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.__CLERK_PUBLISHABLE_KEY = '${clerkKey}';
+                `,
+              }}
+            />
+          )}
+        </head>
+        <body className={font.className}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <BillingProvider>
+              <ModalProvider>
+                {children}
+                <Toaster />
+              </ModalProvider>
+            </BillingProvider>
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   )
-}
 }
