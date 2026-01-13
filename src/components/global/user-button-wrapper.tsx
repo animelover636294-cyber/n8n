@@ -1,6 +1,6 @@
 'use client'
 
-import { UserButton, useAuth } from '@clerk/nextjs'
+import { UserButton } from '@clerk/nextjs'
 import { useEffect, useState, Component, ErrorInfo } from 'react'
 
 type Props = {
@@ -33,21 +33,6 @@ class UserButtonErrorBoundary extends Component<
   }
 }
 
-// Component that uses useAuth - only rendered when Clerk is confirmed ready
-const UserButtonWithAuth = ({ afterSignOutUrl }: Props) => {
-  const { isLoaded } = useAuth()
-  
-  if (!isLoaded) {
-    return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
-  }
-
-  return (
-    <UserButtonErrorBoundary>
-      <UserButton afterSignOutUrl={afterSignOutUrl} />
-    </UserButtonErrorBoundary>
-  )
-}
-
 export const UserButtonWrapper = ({ afterSignOutUrl }: Props) => {
   const [mounted, setMounted] = useState(false)
   const [clerkReady, setClerkReady] = useState(false)
@@ -60,16 +45,19 @@ export const UserButtonWrapper = ({ afterSignOutUrl }: Props) => {
       if (typeof window !== 'undefined') {
         // Check if Clerk is available in window and has initialized
         const clerk = (window as any).Clerk
-        if (clerk && (clerk.loaded || clerk.__internal || clerk.user || clerk.session)) {
-          setClerkReady(true)
+        if (clerk && (clerk.loaded || clerk.__internal || clerk.user || clerk.session || clerk.client)) {
+          // Double check that Clerk is actually ready
+          setTimeout(() => {
+            setClerkReady(true)
+          }, 100)
         } else {
           // Retry after a delay, but limit retries
-          const maxRetries = 20
+          const maxRetries = 30
           let retries = 0
           const retry = () => {
             retries++
             if (retries < maxRetries) {
-              setTimeout(checkClerkReady, 150)
+              setTimeout(checkClerkReady, 100)
             }
           }
           retry()
@@ -84,11 +72,16 @@ export const UserButtonWrapper = ({ afterSignOutUrl }: Props) => {
   }, [mounted])
 
   // Show loading if not mounted or Clerk not ready
-  // Only render UserButtonWithAuth (which calls useAuth) when Clerk is confirmed ready
+  // DO NOT render UserButton until Clerk is confirmed ready
   if (!mounted || !clerkReady) {
     return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
   }
 
-  return <UserButtonWithAuth afterSignOutUrl={afterSignOutUrl} />
+  // Only render UserButton when Clerk is confirmed ready
+  return (
+    <UserButtonErrorBoundary>
+      <UserButton afterSignOutUrl={afterSignOutUrl} />
+    </UserButtonErrorBoundary>
+  )
 }
 
