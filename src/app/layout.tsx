@@ -38,6 +38,8 @@ export default function RootLayout({
   return (
     <ClerkProvider
       publishableKey={clerkKey}
+      afterSignInUrl="/dashboard"
+      afterSignUpUrl="/dashboard"
     >
       <html lang="en">
         <body className={font.className}>
