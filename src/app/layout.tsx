@@ -40,8 +40,24 @@ export default function RootLayout({
       publishableKey={clerkKey}
       afterSignInUrl="/dashboard"
       afterSignUpUrl="/dashboard"
+      appearance={{
+        elements: {
+          rootBox: 'mx-auto',
+        },
+      }}
     >
       <html lang="en">
+        <head>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                if (typeof window !== 'undefined') {
+                  window.__CLERK_PUBLISHABLE_KEY = '${clerkKey}';
+                }
+              `,
+            }}
+          />
+        </head>
         <body className={font.className}>
           <ThemeProvider
             attribute="class"
