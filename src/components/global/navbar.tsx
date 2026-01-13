@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 import { MenuIcon } from 'lucide-react'
-import { UserButton, currentUser } from '@clerk/nextjs'
+import { UserButton, currentUser, ClerkLoaded, ClerkLoading } from '@clerk/nextjs'
 
 type Props = {}
 
@@ -53,7 +53,16 @@ const Navbar = async (props: Props) => {
             {user ? 'Dashboard' : 'Get Started'}
           </span>
         </Link>
-        {user ? <UserButton afterSignOutUrl="/" /> : null}
+        {user ? (
+          <>
+            <ClerkLoading>
+              <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+            </ClerkLoading>
+            <ClerkLoaded>
+              <UserButton afterSignOutUrl="/" />
+            </ClerkLoaded>
+          </>
+        ) : null}
         <MenuIcon className="md:hidden" />
       </aside>
     </header>
