@@ -5,7 +5,7 @@ interface ModalProviderProps {
   children: React.ReactNode
 }
 
-export type ModalData = {}
+export type ModalData = Record<string, unknown>
 
 type ModalContextType = {
   data: ModalData
@@ -37,7 +37,8 @@ const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
   ) => {
     if (modal) {
       if (fetchData) {
-        setData({ ...data, ...(await fetchData()) } || {})
+        const fetched = await fetchData()
+        setData((prev) => ({ ...prev, ...(fetched ?? {}) }))
       }
       setShowingModal(modal)
       setIsOpen(true)
