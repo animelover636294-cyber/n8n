@@ -16,14 +16,19 @@ const UploadCareButton = ({ onUpload }: Props) => {
   >(null)
 
   useEffect(() => {
+    const ctx = ctxProviderRef.current
+    if (!ctx) return
+
     const handleUpload = async (e: any) => {
       const file = await onUpload(e.detail.cdnUrl)
       if (file) {
         router.refresh()
       }
     }
-    ctxProviderRef.current.addEventListener('file-upload-success', handleUpload)
-  }, [])
+    ctx.addEventListener('file-upload-success', handleUpload)
+
+    return () => ctx.removeEventListener('file-upload-success', handleUpload)
+  }, [onUpload, router])
 
   return (
     <div>
