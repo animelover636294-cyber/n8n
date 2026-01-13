@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ModeToggle } from '../global/mode-toggle'
 import { Book, Headphones, Search } from 'lucide-react'
 import Templates from '../icons/cloud_download'
@@ -11,7 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { UserButton, ClerkLoaded, ClerkLoading } from '@clerk/nextjs'
+import { UserButton } from '@clerk/nextjs'
 import { useBilling } from '@/providers/billing-provider'
 import { onPaymentDetails } from '@/app/(main)/(pages)/billing/_actions/payment-connecetions'
 
@@ -19,6 +19,7 @@ type Props = {}
 
 const InfoBar = (props: Props) => {
   const { credits, tier, setCredits, setTier } = useBilling()
+  const [isClerkReady, setIsClerkReady] = useState(false)
 
   const onGetPayment = async () => {
     try {
@@ -34,6 +35,17 @@ const InfoBar = (props: Props) => {
 
   useEffect(() => {
     onGetPayment()
+    
+    // Wait for Clerk to be available
+    const checkClerk = () => {
+      if (typeof window !== 'undefined' && (window as any).Clerk) {
+        setIsClerkReady(true)
+      } else {
+        // Retry after a short delay
+        setTimeout(checkClerk, 100)
+      }
+    }
+    checkClerk()
   }, [])
 
   return (
@@ -75,12 +87,11 @@ const InfoBar = (props: Props) => {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <ClerkLoaded>
+      {isClerkReady ? (
         <UserButton />
-      </ClerkLoaded>
-      <ClerkLoading>
+      ) : (
         <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
-      </ClerkLoading>
+      )}
     </div>
   )
 }
