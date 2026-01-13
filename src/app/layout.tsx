@@ -4,6 +4,7 @@ import './globals.css'
 import { ThemeProvider } from '@/providers/theme-provider'
 import { ClerkProvider } from '@clerk/nextjs'
 import ModalProvider from '@/providers/modal-provider'
+import ClerkDebug from '@/components/global/clerk-debug'
 import { Toaster } from '@/components/ui/sonner'
 import { BillingProvider } from '@/providers/billing-provider'
 
@@ -77,8 +78,7 @@ export default function RootLayout({
             <BillingProvider>
               <ModalProvider>
                 {/* Debug component to log Clerk initialization state in client consoles */}
-                {/* Remove in production after debugging */}
-                <script dangerouslySetInnerHTML={{__html: `/* Clerk debug: injected */`}} />
+                <ClerkDebug />
                 {children}
                 <Toaster />
               </ModalProvider>
