@@ -16,6 +16,8 @@ export default authMiddleware({
   ],
 })
 
+// Middleware configuration for Clerk authentication
+
 export const config = {
   matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
 }
