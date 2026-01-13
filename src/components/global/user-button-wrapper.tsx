@@ -1,32 +1,54 @@
 'use client'
 
-import { UserButton } from '@clerk/nextjs'
-import { useEffect, useState } from 'react'
+import { UserButton, useAuth } from '@clerk/nextjs'
+import { useEffect, useState, Component, ErrorInfo } from 'react'
 
 type Props = {
   afterSignOutUrl?: string
 }
 
+// Error boundary component for UserButton
+class UserButtonErrorBoundary extends Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props)
+    this.state = { hasError: false }
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('UserButton error:', error, errorInfo)
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+    }
+    return this.props.children
+  }
+}
+
 export const UserButtonWrapper = ({ afterSignOutUrl }: Props) => {
-  const [isClerkReady, setIsClerkReady] = useState(false)
+  const { isLoaded } = useAuth()
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // Wait for Clerk to be available
-    const checkClerk = () => {
-      if (typeof window !== 'undefined' && (window as any).Clerk) {
-        setIsClerkReady(true)
-      } else {
-        // Retry after a short delay
-        setTimeout(checkClerk, 100)
-      }
-    }
-    checkClerk()
+    setMounted(true)
   }, [])
 
-  if (!isClerkReady) {
+  if (!mounted || !isLoaded) {
     return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
   }
 
-  return <UserButton afterSignOutUrl={afterSignOutUrl} />
+  return (
+    <UserButtonErrorBoundary>
+      <UserButton afterSignOutUrl={afterSignOutUrl} />
+    </UserButtonErrorBoundary>
+  )
 }
 

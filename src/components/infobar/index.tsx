@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, ErrorInfo, Component } from 'react'
 import { ModeToggle } from '../global/mode-toggle'
 import { Book, Headphones, Search } from 'lucide-react'
 import Templates from '../icons/cloud_download'
@@ -11,15 +11,59 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { UserButton } from '@clerk/nextjs'
+import { UserButton, useAuth } from '@clerk/nextjs'
 import { useBilling } from '@/providers/billing-provider'
 import { onPaymentDetails } from '@/app/(main)/(pages)/billing/_actions/payment-connecetions'
 
 type Props = {}
 
+// Error boundary component for UserButton
+class UserButtonErrorBoundary extends Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props)
+    this.state = { hasError: false }
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('UserButton error:', error, errorInfo)
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+    }
+    return this.props.children
+  }
+}
+
+const SafeUserButton = () => {
+  const { isLoaded } = useAuth()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted || !isLoaded) {
+    return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+  }
+
+  return (
+    <UserButtonErrorBoundary>
+      <UserButton />
+    </UserButtonErrorBoundary>
+  )
+}
+
 const InfoBar = (props: Props) => {
   const { credits, tier, setCredits, setTier } = useBilling()
-  const [isClerkReady, setIsClerkReady] = useState(false)
 
   const onGetPayment = async () => {
     try {
@@ -35,17 +79,6 @@ const InfoBar = (props: Props) => {
 
   useEffect(() => {
     onGetPayment()
-    
-    // Wait for Clerk to be available
-    const checkClerk = () => {
-      if (typeof window !== 'undefined' && (window as any).Clerk) {
-        setIsClerkReady(true)
-      } else {
-        // Retry after a short delay
-        setTimeout(checkClerk, 100)
-      }
-    }
-    checkClerk()
   }, [])
 
   return (
@@ -87,11 +120,7 @@ const InfoBar = (props: Props) => {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      {isClerkReady ? (
-        <UserButton />
-      ) : (
-        <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
-      )}
+      <SafeUserButton />
     </div>
   )
 }
