@@ -18,7 +18,7 @@ const UserButton = dynamic(
   { ssr: false }
 )
 import { useBilling } from '@/providers/billing-provider'
-import { onPaymentDetails } from '@/app/(main)/(pages)/billing/_actions/payment-connecetions'
+import { onPaymentDetails } from '@/app/(main)/(pages)/billing/_actions/payment-connections'
 
 type Props = {}
 
