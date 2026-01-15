@@ -5,7 +5,6 @@ import { ModeToggle } from '../global/mode-toggle'
 import { Book, Headphones, Search } from 'lucide-react'
 import Templates from '../icons/cloud_download'
 import { Input } from '@/components/ui/input'
-
 import {
   Tooltip,
   TooltipContent,
@@ -13,20 +12,24 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useAuth } from '@clerk/nextjs'
+
 const UserButton = dynamic(
   () => import('@clerk/nextjs').then((mod) => mod.UserButton),
   { ssr: false }
 )
+
 import { useBilling } from '@/providers/billing-provider'
-import { onPaymentDetails } from '@/app/(main)/(pages)/billing/_actions/payment-connections'
+import { onPaymentDetails } from '@/app/(main)/(pages)/billing/_actions/payment-connecetions'
 
 type Props = {}
 
 const SafeUserButton = () => {
   const { isLoaded } = useAuth()
+
   if (!isLoaded) {
     return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
   }
+
   return <UserButton />
 }
 
@@ -61,6 +64,7 @@ const InfoBar = (props: Props) => {
           </span>
         )}
       </span>
+
       <span className="flex items-center rounded-full bg-muted px-4">
         <Search />
         <Input
@@ -68,6 +72,7 @@ const InfoBar = (props: Props) => {
           className="border-none bg-transparent"
         />
       </span>
+
       <TooltipProvider>
         <Tooltip delayDuration={0}>
           <TooltipTrigger>
@@ -78,6 +83,7 @@ const InfoBar = (props: Props) => {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
+
       <TooltipProvider>
         <Tooltip delayDuration={0}>
           <TooltipTrigger>
@@ -88,6 +94,7 @@ const InfoBar = (props: Props) => {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
+
       <SafeUserButton />
     </div>
   )
