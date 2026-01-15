@@ -53,6 +53,7 @@ const Connections = async (props: Props) => {
   }
 
   const user = await currentUser()
+  if (!user) return null
 
   const onUserConnections = async () => {
     console.log(database_id)
@@ -90,11 +91,11 @@ const Connections = async (props: Props) => {
     const user_info = await getUserData(user.id)
 
     //get user info with all connections
-user_info?.connections.map((connection) => {
+    user_info?.connections.map((connection) => {
       connections[connection.type] = true
       return (connections[connection.type] = true)
     })
-  }
+
     // Google Drive connection will always be true
     // as it is given access during the login process
     return { ...connections, 'Google Drive': true }
