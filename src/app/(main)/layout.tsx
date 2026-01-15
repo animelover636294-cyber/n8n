@@ -2,10 +2,18 @@
 import React from 'react'
 import Sidebar from '@/components/sidebar'
 import InfoBar from '@/components/infobar'
+import { auth } from '@clerk/nextjs'
+import { redirect } from 'next/navigation'
 
 type Props = { children: React.ReactNode }
 
-const Layout = (props: Props) => {
+const Layout = (props: Props)  async=> {
+  
+    const { userId } = await auth();
+    
+    if (!userId) {
+      redirect('/sign-in');
+    }
   return (
     <div className="flex overflow-hidden h-screen">
       <Sidebar />
