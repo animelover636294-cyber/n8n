@@ -74,10 +74,7 @@ const Settings = async (props: Props) => {
         <ProfilePicture
           onUpload={uploadProfileImage}
           onDelete={removeProfileImage}
-          userProfile={{
-            profileImage: user?.profileImage,
-            name: user?.name,
-          }}
+          userImage={user?.profileImage}
         />
         <ProfileForm
 user={user}          onUpdate={updateUserInfo}
