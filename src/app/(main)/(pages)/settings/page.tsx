@@ -80,8 +80,7 @@ const Settings = async (props: Props) => {
           }}
         />
         <ProfileForm
-          userFullName={user?.name}
-          onUpdate={updateUserInfo}
+user={user}          onUpdate={updateUserInfo}
         />
       </div>
     </>
