@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation'
 
 type Props = { children: React.ReactNode }
 
-const Layout = (props: Props)  async=> {
+const Layout = async (props: Props) =>{
   
     const { userId } = await auth();
     
