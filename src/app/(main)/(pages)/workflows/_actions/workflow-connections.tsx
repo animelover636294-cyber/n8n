@@ -147,7 +147,6 @@ export const onGetWorkflows = async () => {
 
     if (workflow) return workflow
   }
-    return []
 }
 
 export const onCreateWorkflow = async (name: string, description: string) => {
