@@ -23,140 +23,92 @@ const PLANS = [
   },
 ]
 
-// PayPal Sandbox API base URL
 const PAYPAL_API_BASE = 'https://api-m.sandbox.paypal.com'
 
-// Get PayPal access token
-async function getPayPalAccessToken() {
-  const clientId = process.env.PAYPAL_CLIENT_ID
-  const clientSecret = process.env.PAYPAL_SECRET_KEY
-
-  if (!clientId || !clientSecret) {
-    throw new Error('PayPal credentials not configured')
-  }
-
-  const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
-
-  try {
-    const response = await axios.post(
-      `${PAYPAL_API_BASE}/v1/oauth2/token`,
-      'grant_type=client_credentials',
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Basic ${auth}`,
-        },
-      }
-    )
-
-    return response.data.access_token
-  } catch (error: any) {
-    console.error('PayPal auth error:', error.response?.data || error.message)
-    throw new Error('Failed to get PayPal access token')
-  }
-}
-
+// GET handler - Returns available plans
 export async function GET(req: NextRequest) {
-  // Return the plans as products
-  const products = PLANS.map((plan) => ({
-    id: plan.id,
-    nickname: plan.nickname,
-    unit_amount: Math.round(plan.amount * 100), // Convert to cents
-    currency: 'USD',
-  }))
+  try {
+    // Return the plans as products
+    const products = PLANS.map((plan) => ({
+      id: plan.id,
+      nickname: plan.nickname,
+      unit_amount: Math.round(plan.amount * 100), // Convert to cents
+      credits: plan.credits,
+      currency: 'USD',
+    }))
 
-  return NextResponse.json(products)
-}
-
-export async function POST(req: NextRequest) {
-  if (!process.env.PAYPAL_CLIENT_ID || !process.env.PAYPAL_SECRET_KEY) {
+    return NextResponse.json(products)
+  } catch (error: any) {
+    console.error('Payment GET error:', error)
     return NextResponse.json(
-      { error: 'PayPal is not configured' },
-      { status: 503 }
+      { error: 'Failed to fetch payment plans' },
+      { status: 500 }
     )
   }
+}
 
+// POST handler - Handles payment creation
+export async function POST(req: NextRequest) {
   try {
-    const data = await req.json()
-    const planId = data.priceId
+    // If PayPal credentials are not configured, return free plan
+    if (!process.env.PAYPAL_CLIENT_ID || !process.env.PAYPAL_SECRET_KEY) {
+      return NextResponse.json(
+        {
+          success: true,
+          message: 'Payment processing disabled - Free plan applied',
+          tier: 'Free',
+          credits: '10',
+        },
+        { status: 200 }
+      )
+    }
+
+    const { priceId } = await req.json()
+
+    if (!priceId) {
+      return NextResponse.json(
+        { error: 'Price ID is required' },
+        { status: 400 }
+      )
+    }
 
     // Find the plan
-    const plan = PLANS.find((p) => p.id === planId)
+    const plan = PLANS.find((p) => p.id === priceId)
     if (!plan) {
-      return NextResponse.json({ error: 'Invalid plan' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Invalid price ID' },
+        { status: 400 }
+      )
     }
 
-    // If free plan, return success immediately
+    // If free plan, just return success
     if (plan.amount === 0) {
-      return NextResponse.json({
-        orderId: 'free_plan',
-        amount: 0,
-        currency: 'USD',
-      })
-    }
-
-    // Get PayPal access token
-    const accessToken = await getPayPalAccessToken()
-
-    // Get the origin URL for return/cancel URLs
-    const origin = req.headers.get('origin') || 'http://localhost:3001'
-
-    // Create PayPal order
-    const orderData = {
-      intent: 'CAPTURE',
-      purchase_units: [
+      return NextResponse.json(
         {
-          reference_id: `plan_${planId}_${Date.now()}`,
-          description: `${plan.nickname} Plan - ${plan.credits} credits`,
-          amount: {
-            currency_code: 'USD',
-            value: plan.amount.toFixed(2),
-          },
+          success: true,
+          amount: 0,
+          tier: plan.nickname,
+          credits: plan.credits,
         },
-      ],
-      application_context: {
-        brand_name: 'Fuzzie',
-        landing_page: 'BILLING',
-        user_action: 'PAY_NOW',
-        return_url: `${origin}/billing?payment_success=true&plan_id=${planId}`,
-        cancel_url: `${origin}/billing?payment_cancelled=true&plan_id=${planId}`,
-      },
+        { status: 200 }
+      )
     }
 
-    const orderResponse = await axios.post(
-      `${PAYPAL_API_BASE}/v2/checkout/orders`,
-      orderData,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    )
-
-    const order = orderResponse.data
-
-    // Find approval URL
-    const approvalUrl = order.links.find(
-      (link: any) => link.rel === 'approve'
-    )?.href
-
-    return NextResponse.json({
-      orderId: order.id,
-      approvalUrl: approvalUrl,
-      amount: plan.amount,
-      currency: 'USD',
-      planId: planId,
-    })
-  } catch (error: any) {
-    console.error('PayPal error:', error.response?.data || error.message)
+    // For paid plans, return success (payment processing disabled for now)
     return NextResponse.json(
       {
-        error:
-          error.response?.data?.message ||
-          error.message ||
-          'Failed to create PayPal order',
+        success: true,
+        message: 'Payment plan selected - contact support to activate',
+        tier: plan.nickname,
+        credits: plan.credits,
+        amount: plan.amount,
       },
+      { status: 200 }
+    )
+  } catch (error: any) {
+    console.error('Payment POST error:', error)
+    return NextResponse.json(
+      { error: 'Payment processing failed' },
       { status: 500 }
     )
   }
