@@ -53,7 +53,6 @@ const Connections = async (props: Props) => {
   }
 
   const user = await currentUser()
-   if (!user) return <></>
 
   const onUserConnections = async () => {
     console.log(database_id)
