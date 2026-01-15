@@ -15,6 +15,8 @@ export default authMiddleware({
     '/api/auth/callback/slack',
     '/api/flow',
     '/api/cron/wait',
+        '/dashboard',
+        '/(main)/(pages)/(.*)',
   ],
   debug: process.env.NODE_ENV === 'development',
 })
