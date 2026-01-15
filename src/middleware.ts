@@ -1,5 +1,4 @@
-import { authMiddleware, redirectToSignIn } from '@clerk/nextjs'
-import { NextRequest, NextResponse } from 'next/server'
+import { authMiddleware } from '@clerk/nextjs'
 
 export default authMiddleware({
   publicRoutes: [
@@ -18,12 +17,6 @@ export default authMiddleware({
     '/api/cron/wait',
   ],
   debug: process.env.NODE_ENV === 'development',
-  afterAuth(auth, req) {
-    // Handle users who aren't authenticated
-    if (!auth.userId && !auth.isPublicRoute) {
-      return redirectToSignIn({ returnBackUrl: req.url })
-    }
-  },
 })
 
 export const config = {
