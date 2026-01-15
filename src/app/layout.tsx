@@ -48,8 +48,8 @@ export default function RootLayout({
       <body className={font.className}>
         <ClerkProvider
           publishableKey={clerkKey}
-          afterSignInUrl="/dashboard"
-          afterSignUpUrl="/dashboard"
+          afterSignInUrl="//"
+          afterSignUpUrl="//"
           signInUrl="/sign-in"
           signUpUrl="/sign-up"
           appearance={{
