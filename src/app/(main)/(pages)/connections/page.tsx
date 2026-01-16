@@ -52,7 +52,8 @@ const Connections = async (props: Props) => {
     team_name: '',
   }
 
-  const user = await currentUser()
+try {
+    const user = await currentUser()
   if (!user) return null
 
   const onUserConnections = async () => {
@@ -126,6 +127,10 @@ const Connections = async (props: Props) => {
       </div>
     </div>
   )
+  } catch (error) {
+    console.error('Error loading connections:', error)
+    return null
+  }
 }
 
 export default Connections
