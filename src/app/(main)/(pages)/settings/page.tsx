@@ -7,80 +7,93 @@ import { currentUser } from '@clerk/nextjs'
 type Props = {}
 
 const Settings = async (props: Props) => {
-  const authUser = await currentUser()
-  if (!authUser) return null
+  try {
+    const authUser = await currentUser()
+    if (!authUser) return null
 
-  let user = await db.user.findUnique({
-    where: { clerkId: authUser.id },
-  })
-
-  // If user doesn't exist in DB yet, create them
-  if (!user) {
-    user = await db.user.create({
-      data: {
-        clerkId: authUser.id,
-        email: authUser.emailAddresses[0]?.emailAddress || '',
-        name: authUser.firstName || authUser.username || '',
-      },
+    let user = await db.user.findUnique({
+      where: { clerkId: authUser.id },
     })
-  }
 
-  const removeProfileImage = async () => {
-    'use server'
-    const response = await db.user.update({
-      where: {
-        clerkId: authUser.id,
-      },
-      data: {
-        profileImage: '',
-      },
-    })
-    return response
-  }
+    if (!user) {
+      user = await db.user.create({
+        data: {
+          clerkId: authUser.id,
+          email: authUser.emailAddresses[0]?.emailAddress || '',
+          name: authUser.firstName || authUser.username || '',
+        },
+      })
+    }
 
-  const uploadProfileImage = async (image: string) => {
-    'use server'
-    const id = authUser.id
-    const response = await db.user.update({
-      where: {
-        clerkId: id,
-      },
-      data: {
-        profileImage: image,
-      },
-    })
-    return response
-  }
+    const removeProfileImage = async () => {
+      'use server'
+      const response = await db.user.update({
+        where: {
+          clerkId: authUser.id,
+        },
+        data: {
+          profileImage: '',
+        },
+      })
+      return response
+    }
 
-  const updateUserInfo = async (name: string) => {
-    'use server'
-    const updateUser = await db.user.update({
-      where: {
-        clerkId: authUser.id,
-      },
-      data: {
-        name,
-      },
-    })
-    return updateUser
-  }
+    const uploadProfileImage = async (image: string) => {
+      'use server'
+      const id = authUser.id
+      const response = await db.user.update({
+        where: {
+          clerkId: id,
+        },
+        data: {
+          profileImage: image,
+        },
+      })
+      return response
+    }
 
-  return (
-    <div className="flex flex-col w-full h-full gap-8 max-w-2xl">
-      <div>
-        <h1 className="text-4xl font-bold">Settings</h1>
+    const updateUserInfo = async (name: string) => {
+      'use server'
+      const updateUser = await db.user.update({
+        where: {
+          clerkId: authUser.id,
+        },
+        data: {
+          name,
+        },
+      })
+      return updateUser
+    }
+
+    return (
+      <div className="flex flex-col w-full h-full gap-8 max-w-2xl">
+        <div>
+          <h1 className="text-4xl font-bold">Settings</h1>
+        </div>
+        <ProfilePicture
+          onUpload={uploadProfileImage}
+          onDelete={removeProfileImage}
+          userImage={user?.profileImage}
+        />
+        <ProfileForm
+          user={user}
+          onUpdate={updateUserInfo}
+        />
       </div>
-      <ProfilePicture
-        onUpload={uploadProfileImage}
-        onDelete={removeProfileImage}
-        userImage={user?.profileImage}
-      />
-      <ProfileForm
-        user={user}
-        onUpdate={updateUserInfo}
-      />
-    </div>
-  )
+    )
+  } catch (error) {
+    console.error('Settings page error:', error)
+    return (
+      <div className="flex flex-col w-full h-full gap-8 max-w-2xl">
+        <div>
+          <h1 className="text-4xl font-bold">Settings</h1>
+        </div>
+        <div className="text-red-500">
+          <p>Error loading settings. Please try again later.</p>
+        </div>
+      </div>
+    )
+  }
 }
 
 export default Settings
