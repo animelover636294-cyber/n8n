@@ -11,6 +11,7 @@ type Props = {}
 
 const Navbar = (props: Props) => {
   const auth = useAuth()
+    const router = useRouter()
   
   // Handle case when auth is undefined or not loaded
   if (!auth || auth === undefined) {
