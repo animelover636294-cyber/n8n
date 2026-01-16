@@ -28,10 +28,12 @@ const ProfilePicture = ({ userImage, onDelete, onUpload }: Props) => {
       <div className="flex h-[30vh] flex-col items-center justify-center">
         {userImage ? (
           <>
-            <div className="relative h-full w-2/12">
+            <div className="relative h-full w-2/12 rounded-lg border-2 border-purple-400 shadow-lg shadow-purple-300/50 bg-gradient-to-br from-purple-50 to-pink-50 p-4 hover:shadow-xl hover:shadow-purple-400/60 hover:border-purple-500 transition-all duration-3002/12">
               <Image
                 src={userImage}
                 alt="User_Image"
+            className="rounded-lg object-cover hover:scale-105 transition-transform duration-300"
+                
                 fill
               />
             </div>
