@@ -12,25 +12,6 @@ type Props = {
 }
 
 const Connections = async (props: Props) => {
-  const {
-    webhook_id,
-    webhook_name,
-    webhook_url,
-    guild_id,
-    guild_name,
-    channel_id,
-    access_token,
-    workspace_name,
-    workspace_icon,
-    workspace_id,
-    database_id,
-    app_id,
-    authed_user_id,
-    authed_user_token,
-    slack_access_token,
-    bot_user_id,
-    team_id,
-    team_name,
   } = props.searchParams ?? {
     webhook_id: '',
     webhook_name: '',
