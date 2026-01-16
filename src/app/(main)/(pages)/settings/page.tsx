@@ -66,21 +66,20 @@ const Settings = async (props: Props) => {
   }
 
   return (
-    <>
-      <div className="flex flex-col w-full h-full gap-8 max-w-2xl">
-        <div>
-          <h1 className="text-4xl font-bold">Settings</h1>
-        </div>
-        <ProfilePicture
-          onUpload={uploadProfileImage}
-          onDelete={removeProfileImage}
-          userImage={user?.profileImage}
-        />
-        <ProfileForm
-user={user}          onUpdate={updateUserInfo}
-        />
+    <div className="flex flex-col w-full h-full gap-8 max-w-2xl">
+      <div>
+        <h1 className="text-4xl font-bold">Settings</h1>
       </div>
-    </>
+      <ProfilePicture
+        onUpload={uploadProfileImage}
+        onDelete={removeProfileImage}
+        userImage={user?.profileImage}
+      />
+      <ProfileForm
+        user={user}
+        onUpdate={updateUserInfo}
+      />
+    </div>
   )
 }
 
