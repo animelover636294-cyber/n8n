@@ -1,4 +1,5 @@
 'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -9,68 +10,68 @@ import { UserButton, useAuth } from '@clerk/nextjs'
 type Props = {}
 
 const Navbar = (props: Props) => {
-  const { isLoaded, userId } = useAuth()
-   const router = useRouter()
+  const auth = useAuth()
+  
+  // Handle case when auth is undefined or not loaded
+  if (!auth || auth === undefined) {
+    return (
+      <header className="fixed right-0 left-0 top-0 py-4 px-4 bg-black/40 backdrop-blur-lg z-[100] flex items-center border-b-[1px] border-neutral-700 justify-between">
+        <aside className="flex gap-[2px]">
+          <p className="text-3xl font-bold">Fuzzie.</p>
+        </aside>
+      </header>
+    )
+  }
+  
+  const router = useRouter()
+  const { isLoaded, userId } = auth
+
   return (
-    <header className="fixed right-0 left-0 top-0 py-4 px-4 bg-black/40 backdrop-blur-lg z-[100] flex items-center border-b-[1px] border-neutral-900 justify-between">
-      <aside className="flex items-center gap-[2px]">
-        <p className="text-3xl font-bold">Fu</p>
-        <Image
-          src="/fuzzieLogo.png"
-          width={15}
-          height={15}
-          alt="fuzzie logo"
-          className="shadow-sm"
-        />
-        <p className="text-3xl font-bold">zie</p>
+    <header className="fixed right-0 left-0 top-0 py-4 px-4 bg-black/40 backdrop-blur-lg z-[100] flex items-center border-b-[1px] border-neutral-700 justify-between">
+      <aside className="flex gap-[2px]">
+        <p className="text-3xl font-bold">Fuzzie.</p>
       </aside>
-      <nav className="absolute left-[50%] top-[50%] transform translate-x-[-50%] translate-y-[-50%] hidden md:block">
-        <ul className="flex items-center gap-4 list-none">
-          <li>
-            <Link href="#">Products</Link>
-          </li>
-          <li>
-            <Link href="#">Pricing</Link>
-          </li>
-          <li>
-            <Link href="#">Clients</Link>
-          </li>
-          <li>
-            <Link href="#">Resources</Link>
-          </li>
-          <li>
-            <Link href="#">Documentation</Link>
-          </li>
-          <li>
-            <Link href="#">Enterprise</Link>
-          </li>
-        </ul>
+      <nav className="absolute left-[50%] top-[50%] transform -translate-x-[50%] -translate-y-[50%] flex items-center gap-4 ">
+        <Link
+          href="#"
+          className="py-2 px-5 hover:bg-white hover:text-black rounded-full hover:font-bold transition"
+        >
+          Features
+        </Link>
+        <Link
+          href="#"
+          className="py-2 px-5 hover:bg-white hover:text-black rounded-full hover:font-bold transition"
+        >
+          Community
+        </Link>
+        <Link
+          href="#"
+          className="py-2 px-5 hover:bg-white hover:text-black rounded-full hover:font-bold transition"
+        >
+          Enterprise
+        </Link>
       </nav>
-      <aside className="flex items-center gap-4">
-      <button
-     onClick={() => {
-       if (userId) {
-         router.push('/dashboard')
-       } else {
-         router.push('/sign-in')
-       }
-     }}
-     className="relative inline-flex h-10 overflow-hidden rounded-full p-[2px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
-   >
-     <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
-     <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-3 py-1 text-sm font-medium text-white backdrop-blur-3xl">
-       {userId ? 'Dashboard' : 'Get Started'}
-     </span>
-   </button>
-        <div className="w-8 h-8">
-          {!isLoaded ? (
-            <div className="h-full w-full rounded-full bg-slate-800 animate-pulse" />
-          ) : (
-            userId && <UserButton afterSignOutUrl="/" />
-          )}
-        </div>
-        <MenuIcon className="md:hidden" />
-      </aside>
+
+      {isLoaded && userId ? (
+        <aside className="flex gap-3 items-center">
+          <Link
+            href="/dashboard"
+            className="py-2 px-5 hover:bg-white hover:text-black rounded-full hover:font-bold transition"
+          >
+            Dashboard
+          </Link>
+          <UserButton afterSignOutUrl="/" />
+        </aside>
+      ) : (
+        <aside className="flex gap-3 items-center">
+          <Link
+            href="/sign-in"
+            className="py-2 px-5 hover:bg-white hover:text-black rounded-full hover:font-bold transition"
+          >
+            Sign In
+          </Link>
+        </aside>
+      )}
     </header>
   )
 }
