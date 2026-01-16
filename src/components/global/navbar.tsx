@@ -24,7 +24,6 @@ const Navbar = (props: Props) => {
     )
   }
   
-  const router = useRouter()
   const { isLoaded, userId } = auth
 
   return (
