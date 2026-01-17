@@ -59,7 +59,7 @@ export default function RootLayout({
           }}
           allowedRedirectOrigins={
             process.env.NODE_ENV === 'production'
-    ? ['https://n8n-git-main-roshans-projects-fc749964.vercel.app']
+    ? ['https://n8n-pi-flax.vercel.app']
                 : ['http://localhost:3000', 'http://localhost:3001']
           }
         >
