@@ -24,7 +24,7 @@ import { onPaymentDetails } from '@/app/(main)/(pages)/billing/_actions/payment-
 type Props = {}
 
 const SafeUserButton = () => {
-  const { isLoaded } = useAuth(), isSignedIn
+  const { isLoaded, isSignedIn } = useAuth()
 
   if (!isLoaded) {
     return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
