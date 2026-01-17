@@ -24,17 +24,22 @@ import { onPaymentDetails } from '@/app/(main)/(pages)/billing/_actions/payment-
 type Props = {}
 
 const SafeUserButton = () => {
-  const { isLoaded } = useAuth()
+  const { isLoaded } = useAuth(), isSignedIn
 
   if (!isLoaded) {
     return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
   }
+
+    if (!isSignedIn) {
+          return null
+        }
 
   return <UserButton />
 }
 
 const InfoBar = (props: Props) => {
   const { credits, tier, setCredits, setTier } = useBilling()
+    const { isLoaded } = useAuth()
 
   const onGetPayment = async () => {
     try {
@@ -51,6 +56,10 @@ const InfoBar = (props: Props) => {
   useEffect(() => {
     onGetPayment()
   }, [])
+
+    if (!isLoaded) {
+          return <div className="h-16 w-full animate-pulse bg-muted" />
+        }
 
   return (
     <div className="flex flex-row justify-end gap-6 items-center px-4 py-4 w-full dark:bg-black ">
