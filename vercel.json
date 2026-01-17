@@ -6,4 +6,4 @@
     "NODE_ENV": "production"
 },
   "installCommand": "rm -rf node_modules .next && bun install"}
-}
+
