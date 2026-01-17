@@ -1,19 +1,22 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { authMiddleware } from '@clerk/nextjs'
 
-const isProtectedRoute = createRouteMatcher([
-  '/dashboard(.*)',
-  '/connections(.*)',
-  '/workflows(.*)',
-  '/settings(.*)',
-  '/billing(.*)',
-  '/logs(.*)',
-  '/templates(.*)',
-])
-
-export default clerkMiddleware((auth, req) => {
-  if (isProtectedRoute(req)) {
-    auth().protect()
-  }
+export default authMiddleware({
+  publicRoutes: [
+    '/',
+    '/api/clerk-webhook',
+    '/api/drive-activity/notification',
+    '/api/payment/success',
+    '/sign-in',
+    '/sign-up',
+  ],
+  ignoredRoutes: [
+    '/api/auth/callback/discord',
+    '/api/auth/callback/notion',
+    '/api/auth/callback/slack',
+    '/api/flow',
+    '/api/cron/wait',
+  ],
+  debug: process.env.NODE_ENV === 'development',
 })
 
 export const config = {
