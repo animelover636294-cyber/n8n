@@ -8,7 +8,6 @@ export default authMiddleware({
     '/api/payment/success',
     '/sign-in',
     '/sign-up',
-    '/connections',
   ],
   ignoredRoutes: [
     '/api/auth/callback/discord',
