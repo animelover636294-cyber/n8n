@@ -1,4 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+// Clerk v6 Middleware - Modern authentication with clerkMiddleware
 
 const isPublicRoute = createRouteMatcher([
   '/',
