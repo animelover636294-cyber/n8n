@@ -7,6 +7,7 @@ import { auth } from '@clerk/nextjs/server'
 
 type Props = {
   searchParams?: { [key: string]: string | undefined }
+  }
 
 const Connections = async (props: Props) => {
   const {
