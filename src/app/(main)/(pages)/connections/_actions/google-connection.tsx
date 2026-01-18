@@ -1,9 +1,8 @@
 'use server'
 import clerk from '@clerk/clerk-sdk-node'
-import { currentUser } from '@clerk/nextjs'
 import { google } from 'googleapis'
 
-export const getFileMetaData = async () => {
+import { auth } from '@clerk/nextjs/server'
   'use server'
   const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
@@ -11,9 +10,8 @@ export const getFileMetaData = async () => {
     process.env.OAUTH2_REDIRECT_URI
   )
 
-  const user = await currentUser()
-  const userId = user?.id
 
+  nst { userId } = await auth()
   if (!userId) {
     return { message: 'User not found' }
   }
