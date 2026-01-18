@@ -58,6 +58,7 @@ export const getNotionConnection = async () => {
     if (connection) {
       return connection
     }
+  }
 
 export const getNotionDatabase = async (
   databaseId: string,
