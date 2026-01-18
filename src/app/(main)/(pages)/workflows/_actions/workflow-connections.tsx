@@ -137,8 +137,8 @@ export const onCreateNodeTemplate = async (
 }
 
 export const onGetWorkflows = async () => {
-  const user = await currentUser()
-  if (user) {
+const { userId } = await auth()
+  if (userId) {
     const workflow = await db.workflows.findMany({
       where: {
         userId: user.id,
@@ -150,9 +150,9 @@ export const onGetWorkflows = async () => {
 }
 
 export const onCreateWorkflow = async (name: string, description: string) => {
-  const user = await currentUser()
+const { userId } = await auth()
 
-  if (user) {
+  if (userId) {
     // Ensure the user exists in the local database before creating a workflow
     await db.user.upsert({
       where: {
