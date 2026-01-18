@@ -1,12 +1,9 @@
 'use server'
 
 import { db } from '@/lib/db'
-import { currentUser } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
 
-export const onPaymentDetails = async () => {
-  const user = await currentUser()
-
-  if (user) {
+      const { userId } = await auth()
     const connection = await db.user.findFirst({
       where: {
         clerkId: user.id,
@@ -17,7 +14,7 @@ export const onPaymentDetails = async () => {
       },
     })
 
-    if (user) {
+        if (userId) {
       return connection
     }
   }
