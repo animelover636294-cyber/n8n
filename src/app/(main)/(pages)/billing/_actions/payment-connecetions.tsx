@@ -17,5 +17,4 @@ import { auth } from '@clerk/nextjs/server'
         if (userId) {
       return connection
     }
-  }
 }
