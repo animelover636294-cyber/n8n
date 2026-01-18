@@ -1,5 +1,5 @@
 import { google } from 'googleapis'
-import { clerkClient, currentUser } from '@clerk/nextjs'
+import { clerkClient, auth } from '@clerk/nextjs/server'
 export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
@@ -13,8 +13,8 @@ export async function GET() {
       process.env.OAUTH2_REDIRECT_URI
     )
 
-    const user = await currentUser()
-    const userId = user?.id
+        const { userId } = await auth()
+  
     if (!userId) {
       return NextResponse.json({ message: 'User not found' }, { status: 401 })
     }
