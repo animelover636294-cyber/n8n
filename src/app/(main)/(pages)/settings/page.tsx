@@ -1,14 +1,12 @@
 import ProfileForm from '@/components/forms/profile-form'
 import React from 'react'
 import ProfilePicture from './_components/profile-picture'
-import { currentUser } from '@clerk/nextjs'
-
-type Props = {}
+import { auth } from '@clerk/nextjs/server'
 
 const Settings = async (props: Props) => {
   try {
-    const authUser = await currentUser()
-    if (!authUser) return null
+        const { userId } = await auth()
+        if (!userId) return null
 
     const user = {
       id: authUser.id,
