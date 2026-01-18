@@ -1,6 +1,6 @@
 import React from 'react'
 import axios from 'axios'
-import { currentUser } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
 import BillingDashboard from './_components/billing-dashboard'
 
@@ -69,8 +69,8 @@ const Billing = async (props: Props) => {
 
         // Verify payment was successful
         if (order.status === 'COMPLETED') {
-          const user = await currentUser()
-          if (user) {
+              const { userId } = await auth()
+              if (userId) {
             const planName =
               plan_id === 'pro'
                 ? 'Pro'
