@@ -2,7 +2,7 @@
 
 import { Option } from '@/components/ui/multiple-selector'
 import { db } from '@/lib/db'
-import { currentUser } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
 import axios from 'axios'
 
 export const onSlackConnect = async (
@@ -42,8 +42,8 @@ export const onSlackConnect = async (
 }
 
 export const getSlackConnection = async () => {
-  const user = await currentUser()
-  if (user) {
+      const { userId } = await auth()
+      if (userId) {
     return await db.slack.findFirst({
       where: { userId: user.id },
     })
